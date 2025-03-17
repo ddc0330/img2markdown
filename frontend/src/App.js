@@ -3,39 +3,54 @@ import axios from "axios";
 import ReactMarkdown from "react-markdown";
 
 function App() {
-  const [image, setImage] = useState(null); // 存圖片檔案
-  const [text, setText] = useState(""); // 存輸入的文字
-  const [markdown, setMarkdown] = useState(""); // 存回傳的 Markdown 預覽
-  const [markdownRaw, setMarkdownRaw] = useState(""); // 存回傳的 Markdown 原始碼
-  const [loading, setLoading] = useState(false); // 控制 "處理中" 按鈕
+  const [image, setImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [text, setText] = useState("");
+  const [markdown, setMarkdown] = useState("");
+  const [markdownRaw, setMarkdownRaw] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [outputLanguage, setOutputLanguage] = useState("zh"); // 控制輸出語言（預設為中文）
 
-  // 🔹 處理 Ctrl + V 貼上圖片
+  // 處理輸出語言選擇
+  const handleOutputLanguageChange = (event) => {
+    setOutputLanguage(event.target.value);
+  };
+
+  // 處理 Ctrl + V 貼上圖片
   const handlePaste = (event) => {
-    const items = event.clipboardData.items; // 取得剪貼簿的內容
+    const items = event.clipboardData.items;
     for (const item of items) {
       if (item.type.startsWith("image/")) {
-        const file = item.getAsFile(); // 取得圖片檔案
-        setImage(file); // 設定圖片狀態
-        alert("已貼上圖片 📸"); // 提示用戶
-        break; // 只處理第一張圖片
+        const file = item.getAsFile();
+        setImage(file);
+        const imageUrl = URL.createObjectURL(file);
+        setImagePreview(imageUrl);
+        alert("已貼上圖片 📸");
+        break;
       }
     }
   };
 
-  // 🔹 上傳圖片或文字到後端
+  // 處理手動選擇圖片
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setImage(file);
+      const imageUrl = URL.createObjectURL(file);
+      setImagePreview(imageUrl);
+    }
+  };
+
+  // 上傳圖片或文字到後端
   const handleUpload = async () => {
     if (!image && !text.trim()) {
       return alert("請選擇一張圖片或輸入文字！");
     }
 
     const formData = new FormData();
-
-    if (image) {
-      formData.append("file", image);
-    }
-    if (text.trim()) {
-      formData.append("text", text);
-    }
+    if (image) formData.append("file", image);
+    if (text.trim()) formData.append("text", text);
+    formData.append("output_language", outputLanguage); // 傳遞使用者選擇的輸出語言
 
     setLoading(true);
     setMarkdown("");
@@ -60,6 +75,13 @@ function App() {
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }} onPaste={handlePaste}>
       <h1>AI Markdown 產生器</h1>
 
+      {/* 🔹 輸出語言選擇 */}
+      <label>選擇輸出語言：</label>
+      <select value={outputLanguage} onChange={handleOutputLanguageChange}>
+        <option value="zh">中文</option>
+        <option value="en">English</option>
+      </select>
+
       {/* 🔹 文字輸入框 */}
       <textarea
         placeholder="輸入文字，或 Ctrl + V 貼上圖片..."
@@ -69,8 +91,16 @@ function App() {
       />
 
       {/* 🔹 圖片上傳按鈕 */}
-      <input type="file" accept="image/*" onChange={(e) => setImage(e.target.files[0])} />
+      <input type="file" accept="image/*" onChange={handleImageChange} />
       
+      {/* 🔹 圖片預覽 */}
+      {imagePreview && (
+        <div>
+          <h3>圖片預覽：</h3>
+          <img src={imagePreview} alt="上傳的圖片" style={{ maxWidth: "100%", height: "auto", borderRadius: "5px" }} />
+        </div>
+      )}
+
       {/* 🔹 上傳按鈕 */}
       <button onClick={handleUpload} disabled={loading}>
         {loading ? "處理中..." : "上傳圖片 / 文字"}
