@@ -1,16 +1,26 @@
 import React, { useState } from "react";
 import axios from "axios";
 import ReactMarkdown from "react-markdown";
-import "./App.css";
-
 
 function App() {
-  // 🔹 狀態變數 (State) 用來存儲使用者輸入的內容
   const [image, setImage] = useState(null); // 存圖片檔案
   const [text, setText] = useState(""); // 存輸入的文字
   const [markdown, setMarkdown] = useState(""); // 存回傳的 Markdown 預覽
   const [markdownRaw, setMarkdownRaw] = useState(""); // 存回傳的 Markdown 原始碼
   const [loading, setLoading] = useState(false); // 控制 "處理中" 按鈕
+
+  // 🔹 處理 Ctrl + V 貼上圖片
+  const handlePaste = (event) => {
+    const items = event.clipboardData.items; // 取得剪貼簿的內容
+    for (const item of items) {
+      if (item.type.startsWith("image/")) {
+        const file = item.getAsFile(); // 取得圖片檔案
+        setImage(file); // 設定圖片狀態
+        alert("已貼上圖片 📸"); // 提示用戶
+        break; // 只處理第一張圖片
+      }
+    }
+  };
 
   // 🔹 上傳圖片或文字到後端
   const handleUpload = async () => {
@@ -20,27 +30,22 @@ function App() {
 
     const formData = new FormData();
 
-    // 如果有選擇圖片，加入 formData
     if (image) {
       formData.append("file", image);
     }
-    
-    // 如果有輸入文字，加入 formData
     if (text.trim()) {
       formData.append("text", text);
     }
 
-    setLoading(true); // 設定為處理中，避免重複請求
-    setMarkdown("");  // 清空舊的 Markdown 預覽
-    setMarkdownRaw(""); // 清空舊的 Markdown 原始碼
+    setLoading(true);
+    setMarkdown("");
+    setMarkdownRaw("");
 
     try {
-      // 🔹 發送 API 請求到 FastAPI
       const response = await axios.post("http://127.0.0.1:8000/upload/", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      // 設定回傳的 Markdown 預覽與原始碼
       setMarkdown(response.data.markdown_preview);
       setMarkdownRaw(response.data.markdown_raw);
     } catch (error) {
@@ -52,12 +57,12 @@ function App() {
   };
 
   return (
-    <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
+    <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }} onPaste={handlePaste}>
       <h1>AI Markdown 產生器</h1>
 
       {/* 🔹 文字輸入框 */}
       <textarea
-        placeholder="輸入文字..."
+        placeholder="輸入文字，或 Ctrl + V 貼上圖片..."
         value={text}
         onChange={(e) => setText(e.target.value)}
         style={{ width: "100%", height: "100px", marginBottom: "10px" }}
