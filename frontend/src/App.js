@@ -40,21 +40,27 @@ function App() {
     if (!image && !text.trim()) {
       return alert("請選擇一張圖片或輸入文字！");
     }
-
+  
     const formData = new FormData();
+  
     if (image) formData.append("file", image);
     if (text.trim()) formData.append("text", text);
-    formData.append("output_language", outputLanguage);
-
+  
     setLoading(true);
     setMarkdown("");
     setMarkdownRaw("");
-
+  
     try {
       const response = await axios.post("http://127.0.0.1:8000/upload/", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-
+  
+      // ✅ 檢查 API 回傳內容，避免錯誤
+      if (response.data.error) {
+        alert(`錯誤: ${response.data.error}`);
+        return;
+      }
+  
       setMarkdown(response.data.markdown_preview);
       setMarkdownRaw(response.data.markdown_raw);
     } catch (error) {
@@ -67,7 +73,7 @@ function App() {
 
   return (
     <div className="container" onPaste={handlePaste}>
-      <h1>AI Markdown 產生器</h1>
+      <h1>Markdown產生器</h1>
 
       <label>選擇輸出語言：</label>
       <select value={outputLanguage} onChange={handleOutputLanguageChange}>
@@ -75,20 +81,28 @@ function App() {
         <option value="en">English</option>
       </select>
 
-      <textarea
-        placeholder="輸入文字，或 Ctrl + V 貼上圖片..."
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-      />
+      <div className="input-container">
+        {/* 🔹 左側：文字輸入框 */}
+        <textarea
+          placeholder="輸入文字或 Ctrl + V 貼上圖片..."
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+        />
+
+        {/* 🔹 右側：圖片預覽區 */}
+        <div className="image-preview-container">
+          <h3 className="preview-title">圖片預覽：</h3>
+          <div className="image-preview">
+            {imagePreview ? (
+              <img src={imagePreview} alt="上傳的圖片" />
+            ) : (
+              <p className="no-image-text">尚未選擇圖片</p>
+            )}
+          </div>
+        </div>
+      </div>
 
       <input type="file" accept="image/*" onChange={handleImageChange} />
-
-      {imagePreview && (
-        <div className="image-preview">
-          <h3>圖片預覽：</h3>
-          <img src={imagePreview} alt="上傳的圖片" />
-        </div>
-      )}
 
       <button onClick={handleUpload} disabled={loading}>
         {loading ? "處理中..." : "上傳圖片 / 文字"}
