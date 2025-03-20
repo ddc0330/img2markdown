@@ -2,7 +2,7 @@
 
 This project is a **web-based tool** that converts **images and text** into **Markdown format** using Google Gemini API. The front end is deployed on **Vercel**, and the backend is deployed on **Render**.
 
-🔗 **Live Demo:** [img2markdown.vercel.app](https://img2markdown.vercel.app/)
+🔗 **Link:** [img2markdown.vercel.app](https://img2markdown.vercel.app/)
 
 ---
 
