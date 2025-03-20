@@ -51,7 +51,8 @@ function App() {
     setMarkdownRaw("");
   
     try {
-      const response = await axios.post("http://127.0.0.1:8000/upload/", formData, {
+      const API_BASE_URL = "https://img2markdown.onrender.com";
+      const response = await axios.post(`${API_BASE_URL}/upload/`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
   
