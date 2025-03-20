@@ -145,3 +145,22 @@ button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
 }
+
+.markdown-preview,
+.markdown-raw {
+  max-width: 800px; /* 限制最大寬度 */
+  margin: 0 auto; /* 置中顯示 */
+  word-wrap: break-word; /* 讓長行自動換行 */
+  overflow-wrap: break-word;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.markdown-preview pre,
+.markdown-raw pre {
+  white-space: pre-wrap; /* 讓程式碼區塊換行 */
+  word-wrap: break-word;
+  overflow-x: auto; /* 避免太長的內容超出視野 */
+}
