@@ -1,1 +1,2 @@
 npm start
+set URL to http://localhost:8000 in App.js
