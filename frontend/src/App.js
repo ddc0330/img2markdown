@@ -76,7 +76,7 @@ function App() {
 
   return (
     <div className="container" onPaste={handlePaste}>
-      <h1>Markdown產生器</h1>
+      <h1>Markdown筆記產生器</h1>
 
       <label>選擇輸出語言：</label>
       <select value={outputLanguage} onChange={handleOutputLanguageChange}>
