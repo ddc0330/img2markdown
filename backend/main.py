@@ -22,17 +22,25 @@ app.add_middleware(
 @app.post("/upload/")
 async def upload_content(
     file: Optional[UploadFile] = File(None),
-    text: Optional[str] = Form(None)
+    text: Optional[str] = Form(None),
+    lang: Optional[str] = Form("zh")
 ):
-    """
-    處理圖片或文字，並發送至 Google Gemini API 轉換為 Markdown。
-    """
+    
     # 確保至少有一種輸入
     if not file and not text:
         return {"error": "請提供圖片或文字"}
 
     # 🔹 設定 Prompt
-    prompt = "  "
+    prompt = (
+        "你是一位整理資料的筆記助手。請仔細閱讀以下圖片或文字內容，並將其**原始資訊**以清晰、結構良好的 Markdown 筆記形式呈現。"
+        "請使用**繁體中文**回覆，不要加入額外延伸或臆測的內容，只根據輸入的實際資訊進行整理。"
+        "筆記應包含適當的標題、條列清單、段落與粗體，讓內容容易閱讀與複習。"
+        if lang == "zh"
+        else
+        "You are a note-taking assistant. Please read the following image or text carefully and convert the **original content only** into a well-structured Markdown note."
+        "Use **English** in your response. Do not add any additional analysis, assumptions, or creative content—just extract what's in the image or text."
+        "The note should include appropriate headings, bullet points, paragraphs, and bold text for readability."
+    )
 
     # 🔹 準備 Gemini API 參數
     request_content = [{"text": prompt}]  # 讓 Prompt 變成 JSON 內容
@@ -53,7 +61,15 @@ async def upload_content(
 
     # 🔹 發送請求到 Gemini API
     try:
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        model = genai.GenerativeModel(
+            model_name="gemini-1.5-flash",
+            system_instruction=(
+                "所有回覆請使用繁體中文，並使用 Markdown 語法表達內容。"
+                if lang == "zh"
+                else
+                "All responses must be in English and use Markdown formatting."
+            )
+        )
         response = model.generate_content(request_content)
 
         return {

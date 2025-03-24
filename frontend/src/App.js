@@ -45,6 +45,7 @@ function App() {
   
     if (image) formData.append("file", image);
     if (text.trim()) formData.append("text", text);
+    formData.append("lang", outputLanguage);
   
     setLoading(true);
     setMarkdown("");
@@ -52,6 +53,7 @@ function App() {
   
     try {
       const API_BASE_URL = "https://img2markdown.onrender.com";
+      // const API_BASE_URL = "http://localhost:8000";
       const response = await axios.post(`${API_BASE_URL}/upload/`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
