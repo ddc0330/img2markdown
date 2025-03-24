@@ -12,10 +12,10 @@ This project is a **web-based tool** that converts **images and text** into **Ma
 - React.js
 - Axios (for API communication)
 - ReactMarkdown (for Markdown rendering)
-- Vercel (for deployment)
+- Vercel (for deployment), update automatically
 
 ### Backend (FastAPI)
 - FastAPI (API service)
 - Google Generative AI (Gemini API integration)
 - CORS Middleware (to handle cross-origin requests)
-- Render (for deployment)
+- Render (for deployment), click "Clear build cache & deploy" to update
