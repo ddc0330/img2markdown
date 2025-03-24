@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import "./App.css"; // 🔹 確保載入 CSS
 
 function App() {
@@ -121,7 +122,9 @@ function App() {
       {markdown && (
         <div className="markdown-preview">
           <h2>Markdown 預覽</h2>
-          <ReactMarkdown>{markdown}</ReactMarkdown>
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {markdown}
+          </ReactMarkdown>
         </div>
       )}
     </div>
