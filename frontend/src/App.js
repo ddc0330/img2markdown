@@ -90,13 +90,15 @@ function App() {
       </select>
 
       <div className="input-container">
+        {/* Text Input */}
         <textarea
           placeholder="Type text or paste an image using Ctrl + V..."
           value={text}
           onChange={(e) => setText(e.target.value)}
         />
 
-        <div className="image-preview-container">
+        {/* Right Panel */}
+        <div className="right-panel">
           <h3 className="preview-title">Image Preview:</h3>
           <div className="image-preview">
             {imagePreview ? (
@@ -105,25 +107,33 @@ function App() {
               <p className="no-image-text">No image selected</p>
             )}
           </div>
+
+          {/* Horizontal Button Row */}
+          <div className="button-group-row">
+            <button onClick={triggerFileInput}>Upload Image</button>
+            <button
+              onClick={handleUpload}
+              disabled={loading}
+              className="convert-button"
+            >
+              {loading ? "Processing..." : "Convert"}
+            </button>
+          </div>
+
+          {/* Hidden input */}
+          <input
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            onChange={handleImageChange}
+            style={{ display: "none" }}
+          />
+
+          {image && (
+            <p className="file-name">Selected file: {image.name}</p>
+          )}
         </div>
       </div>
-
-      {/* 🔹 Custom file upload button */}
-      <div style={{ marginBottom: "1rem" }}>
-        <button onClick={triggerFileInput}>Upload Image</button>
-        <input
-          type="file"
-          accept="image/*"
-          ref={fileInputRef}
-          onChange={handleImageChange}
-          style={{ display: "none" }}
-        />
-        {image && <p style={{ marginTop: "0.5rem" }}>Selected file: {image.name}</p>}
-      </div>
-
-      <button onClick={handleUpload} disabled={loading}>
-        {loading ? "Processing..." : "Convert"}
-      </button>
 
       {markdownRaw && (
         <div className="markdown-raw">
