@@ -23,3 +23,4 @@ This project is a **web-based tool** that converts **images and text** into **Ma
 ## Planned Features
 * [ ] Login Function (User Authentication)
 * [ ] Markdown File Storage
+* [ ] UI/UX
