@@ -19,3 +19,13 @@ This project is a **web-based tool** that converts **images and text** into **Ma
 - Google Generative AI (Gemini API integration)
 - CORS Middleware (to handle cross-origin requests)
 - Render (for deployment), click "Clear build cache & deploy" to update
+
+## Planned Features
+
+* [ ] **Syntax Highlighting:** JavaScript (js) and Python (py) support.
+* [ ] **Automatic Markdown Line Breaks:** Soft break handling implemented.
+* [ ] **Mathematical Formula Support:** LaTeX and KaTeX support.
+* [ ] **One-Click Markdown Source Code Copy:**  Easy raw Markdown copy.
+* [ ] **Download Options:**  .md and .pdf file downloads.
+* [ ] **Language Switching & Automated Download:**  Chinese and English language support with automated Markdown file downloads.
+
