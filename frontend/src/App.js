@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import axios from "axios";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import "./App.css"; // 🔹 Make sure to load CSS
+import "./App.css";
 
 function App() {
   const [image, setImage] = useState(null);
@@ -12,6 +12,8 @@ function App() {
   const [markdownRaw, setMarkdownRaw] = useState("");
   const [loading, setLoading] = useState(false);
   const [outputLanguage, setOutputLanguage] = useState("en");
+
+  const fileInputRef = useRef();
 
   const handleOutputLanguageChange = (event) => {
     setOutputLanguage(event.target.value);
@@ -54,13 +56,10 @@ function App() {
 
     try {
       const API_BASE_URL = "https://img2markdown.onrender.com";
-      // const API_BASE_URL = "http://localhost:8000";
-
       const response = await axios.post(`${API_BASE_URL}/upload/`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      // ✅ Check for errors in the API response
       if (response.data.error) {
         alert(`Error: ${response.data.error}`);
         return;
@@ -76,6 +75,10 @@ function App() {
     }
   };
 
+  const triggerFileInput = () => {
+    fileInputRef.current.click();
+  };
+
   return (
     <div className="container" onPaste={handlePaste}>
       <h1>Image/Text to Markdown Converter</h1>
@@ -87,14 +90,12 @@ function App() {
       </select>
 
       <div className="input-container">
-        {/* 🔹 Left: Text input area */}
         <textarea
           placeholder="Type text or paste an image using Ctrl + V..."
           value={text}
           onChange={(e) => setText(e.target.value)}
         />
 
-        {/* 🔹 Right: Image preview area */}
         <div className="image-preview-container">
           <h3 className="preview-title">Image Preview:</h3>
           <div className="image-preview">
@@ -107,7 +108,18 @@ function App() {
         </div>
       </div>
 
-      <input type="file" accept="image/*" onChange={handleImageChange} />
+      {/* 🔹 Custom file upload button */}
+      <div style={{ marginBottom: "1rem" }}>
+        <button onClick={triggerFileInput}>Upload Image</button>
+        <input
+          type="file"
+          accept="image/*"
+          ref={fileInputRef}
+          onChange={handleImageChange}
+          style={{ display: "none" }}
+        />
+        {image && <p style={{ marginTop: "0.5rem" }}>Selected file: {image.name}</p>}
+      </div>
 
       <button onClick={handleUpload} disabled={loading}>
         {loading ? "Processing..." : "Convert"}
