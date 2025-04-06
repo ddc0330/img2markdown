@@ -22,7 +22,10 @@ app = FastAPI()
 # CORS 就是一種能讓特定來源來存取 API 的機制，如我的前端存取後端
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://img2markdown.vercel.app"],  # 允許本地前端訪問
+    allow_origins=[
+        "https://img2markdown.vercel.app", 
+        "http://localhost:3000",  
+    ],  # 允許本地前端訪問
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
