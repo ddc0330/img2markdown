@@ -4,7 +4,7 @@ import axios from 'axios';
 const AuthContext = createContext(null);
 
 // 根據環境設定 API 基礎 URL
-const API_BASE_URL = 'https://img2markdown.onrender.com' ;
+const API_BASE_URL = 'https://img2markdown.onrender.com'   ;
 // 'https://img2markdown.onrender.com'
 // 'http://localhost:8000';
 
