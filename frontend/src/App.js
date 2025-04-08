@@ -117,7 +117,7 @@ function MainContent() {
                 </svg>
               </div>
               <h1 className="text-2xl font-mono text-gray-800 relative">
-                Image/Text to Markdown Converter
+                Markdown Converter
               </h1>
             </div>
 
