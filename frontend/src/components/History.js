@@ -5,8 +5,9 @@ import remarkGfm from 'remark-gfm';
 import { useAuth } from '../contexts/AuthContext';
 import { Link } from 'react-router-dom';
 
-const API_BASE_URL = 'http://localhost:8000';
-
+const API_BASE_URL = 'https://img2markdown.onrender.com' ;
+//'https://img2markdown.onrender.com' 
+//'http://localhost:8000'
 function History() {
   const [histories, setHistories] = useState([]);
   const [loading, setLoading] = useState(true);
