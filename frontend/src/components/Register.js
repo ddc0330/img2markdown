@@ -15,25 +15,25 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      setError('密碼不匹配');
+      setError('Passwords do not match');
       return;
     }
     try {
       await register(email, username, password);
       navigate('/login');
     } catch (err) {
-      setError('註冊失敗，請稍後再試');
+      setError('Registration failed. Please try again later.');
     }
   };
 
   return (
     <div className="auth-container">
       <div className="auth-box">
-        <h2>註冊</h2>
+        <h2>Register</h2>
         {error && <div className="error-message">{error}</div>}
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="email">電子郵件</label>
+            <label htmlFor="email">Email</label>
             <input
               type="email"
               id="email"
@@ -43,7 +43,7 @@ function Register() {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="username">用戶名</label>
+            <label htmlFor="username">Username</label>
             <input
               type="text"
               id="username"
@@ -53,7 +53,7 @@ function Register() {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="password">密碼</label>
+            <label htmlFor="password">Password</label>
             <input
               type="password"
               id="password"
@@ -63,7 +63,7 @@ function Register() {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="confirmPassword">確認密碼</label>
+            <label htmlFor="confirmPassword">Confirm Password</label>
             <input
               type="password"
               id="confirmPassword"
@@ -72,10 +72,10 @@ function Register() {
               required
             />
           </div>
-          <button type="submit">註冊</button>
+          <button type="submit">Register</button>
         </form>
         <p>
-          已有帳號？ <Link to="/login">登入</Link>
+          Already have an account? <Link to="/login">Login</Link>
         </p>
       </div>
     </div>

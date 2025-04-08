@@ -2,8 +2,8 @@ from fastapi import FastAPI, UploadFile, File, Form, Depends, HTTPException, sta
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from typing import Optional
-from datetime import timedelta
+from typing import Optional, List
+from datetime import timedelta, datetime as DateTime
 import models, auth
 from database import engine, get_db
 from pydantic import BaseModel
@@ -50,6 +50,16 @@ class UserResponse(BaseModel):
     id: int
     email: str
     username: str
+
+    class Config:
+        orm_mode = True
+
+class HistoryResponse(BaseModel):
+    id: int
+    image_url: Optional[str]
+    markdown_content: str
+    status: str
+    created_at: DateTime
 
     class Config:
         orm_mode = True
@@ -109,10 +119,10 @@ async def read_users_me(current_user: models.User = Depends(auth.get_current_use
 async def upload_content(
     file: Optional[UploadFile] = File(None),
     text: Optional[str] = Form(None),
-    lang: Optional[str] = Form("zh")
+    lang: Optional[str] = Form("zh"),
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(get_db)
 ):
-    
-    # 確保至少有一種輸入
     if not file and not text:
         return {"error": "請提供圖片或文字"}
 
@@ -129,23 +139,24 @@ async def upload_content(
     )
 
     # 🔹 準備 Gemini API 參數
-    request_content = [{"text": prompt}]  # 讓 Prompt 變成 JSON 內容
+    request_content = [{"text": prompt}]
 
     # 若有圖片，應該轉換為 `Blob` 格式
+    image_url = None
     if file:
         image_data = await file.read()
         request_content.append({
             "inline_data": {
-                "mime_type": file.content_type,  # ✅ 指定圖片格式
-                "data": image_data  # ✅ 正確傳遞圖片數據
+                "mime_type": file.content_type,
+                "data": image_data
             }
         })
+        image_url = "image.png"  # 暫時使用固定名稱
 
     # 若有文字，則加入請求內容
     if text:
         request_content.append({"text": text})
 
-    # 🔹 發送請求到 Gemini API
     try:
         model = genai.GenerativeModel(
             model_name="gemini-1.5-flash",
@@ -157,6 +168,17 @@ async def upload_content(
             )
         )
         response = model.generate_content(request_content)
+        
+        # 保存歷史紀錄
+        history = models.History(
+            user_id=current_user.id,
+            image_url=image_url,
+            markdown_content=response.text,
+            status="success"
+        )
+        db.add(history)
+        db.commit()
+        db.refresh(history)
 
         return {
             "markdown_raw": response.text,
@@ -164,4 +186,43 @@ async def upload_content(
         }
 
     except Exception as e:
+        # 保存錯誤記錄
+        history = models.History(
+            user_id=current_user.id,
+            image_url=image_url,
+            markdown_content=str(e),
+            status="error"
+        )
+        db.add(history)
+        db.commit()
         return {"error": f"AI 產生錯誤：{str(e)}"}
+
+# 獲取使用者的歷史紀錄
+@app.get("/history", response_model=List[HistoryResponse])
+async def get_history(
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(get_db)
+):
+    histories = db.query(models.History).filter(
+        models.History.user_id == current_user.id
+    ).order_by(models.History.created_at.desc()).all()
+    return histories
+
+# 刪除特定的歷史紀錄
+@app.delete("/history/{history_id}")
+async def delete_history(
+    history_id: int,
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(get_db)
+):
+    history = db.query(models.History).filter(
+        models.History.id == history_id,
+        models.History.user_id == current_user.id
+    ).first()
+    
+    if not history:
+        raise HTTPException(status_code=404, detail="History not found")
+    
+    db.delete(history)
+    db.commit()
+    return {"message": "History deleted successfully"}

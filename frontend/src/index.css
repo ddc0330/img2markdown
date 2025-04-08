@@ -1,13 +1,145 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body {
+    @apply w-full h-full m-0 p-0 bg-white;
+  }
+  
+  body {
+    @apply text-gray-800;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* 確保中文字符水平排列 */
+    writing-mode: horizontal-tb;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold text-gray-900;
+  }
+  
+  #root {
+    @apply w-full h-full;
+  }
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+@layer components {
+  /* 全寬容器 */
+  .container-fluid {
+    @apply w-full m-0 p-0;
+  }
+
+  /* 導航欄樣式 */
+  .navbar {
+    @apply bg-white border-b border-gray-200 shadow-sm sticky top-0 z-10 w-full;
+    height: 64px; /* 固定高度 */
+    display: flex;
+    align-items: center;
+  }
+
+  .navbar-container {
+    @apply w-full px-4 md:px-6;
+    display: flex;
+    align-items: center;
+    height: 100%;
+  }
+
+  .navbar-content {
+    @apply flex flex-row justify-between items-center;
+    width: 100%;
+    height: 100%;
+  }
+
+  .navbar-brand {
+    @apply flex items-center gap-3;
+    height: 40px; /* 固定高度確保垂直居中 */
+  }
+
+  .navbar-logo {
+    @apply h-8 w-8 text-primary-600;
+  }
+
+  .navbar-title {
+    @apply text-xl font-heading font-semibold text-gray-800;
+    line-height: 40px; /* 與容器高度相同，確保文字垂直居中 */
+  }
+
+  .navbar-menu {
+    @apply flex flex-row items-center;
+    height: 40px; /* 固定高度確保垂直居中 */
+  }
+
+  .navbar-item {
+    @apply flex items-center justify-center text-gray-700 hover:bg-gray-100 transition-colors;
+    @apply h-full w-[120px]; /* 高度貼齊 + 寬度固定（w-40 約 160px） */
+  }
+  
+
+  .navbar-icon {
+    @apply h-5 w-5 mr-2 flex-shrink-0;
+  }
+
+  /* 原有組件樣式 */
+  .btn-primary {
+    @apply px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 
+           transition-all duration-200 shadow-sm hover:shadow-md 
+           focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2;
+  }
+  
+  .btn-danger {
+    @apply px-4 py-2 bg-rose-500 text-white rounded-lg hover:bg-rose-600 
+           transition-all duration-200 shadow-sm hover:shadow-md 
+           focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2;
+  }
+  
+  .input-field {
+    @apply w-full px-4 py-2 bg-white border border-gray-200 rounded-lg
+           focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
+           transition-all duration-200;
+  }
+  
+  .card {
+    @apply bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200
+           border border-gray-100 overflow-hidden;
+  }
+
+  .card-header {
+    @apply p-6 border-b border-gray-100 bg-gray-50;
+  }
+
+  .card-body {
+    @apply p-6;
+  }
+
+  .card-footer {
+    @apply p-6 border-t border-gray-100 bg-gray-50;
+  }
+
+  .badge {
+    @apply px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-success {
+    @apply bg-emerald-100 text-emerald-800;
+  }
+
+  .badge-warning {
+    @apply bg-amber-100 text-amber-800;
+  }
+
+  .badge-error {
+    @apply bg-rose-100 text-rose-800;
+  }
+
+  /* 確保中文字符水平顯示的通用類 */
+  .horizontal-text {
+    writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
+    word-break: keep-all !important;
+    white-space: nowrap !important;
+  }
 }

@@ -16,18 +16,18 @@ function Login() {
       await login(username, password);
       navigate('/');
     } catch (err) {
-      setError('登入失敗，請檢查用戶名和密碼');
+      setError('Login failed. Please check your username and password.');
     }
   };
 
   return (
     <div className="auth-container">
       <div className="auth-box">
-        <h2>登入</h2>
+        <h2>Login</h2>
         {error && <div className="error-message">{error}</div>}
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="username">用戶名</label>
+            <label htmlFor="username">Username</label>
             <input
               type="text"
               id="username"
@@ -37,7 +37,7 @@ function Login() {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="password">密碼</label>
+            <label htmlFor="password">Password</label>
             <input
               type="password"
               id="password"
@@ -46,10 +46,10 @@ function Login() {
               required
             />
           </div>
-          <button type="submit">登入</button>
+          <button type="submit" className="login-button">Login</button>
         </form>
         <p>
-          還沒有帳號？ <Link to="/register">註冊</Link>
+          Don't have an account? <Link to="/register">Register</Link>
         </p>
       </div>
     </div>
