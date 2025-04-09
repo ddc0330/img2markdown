@@ -46,7 +46,9 @@ function Login() {
               required
             />
           </div>
-          <button type="submit" className="login-button">Login</button>
+          <div className="flex justify-center">
+            <button type="submit" className="btn-gray">Login</button>
+          </div>
         </form>
         <p>
           Don't have an account? <Link to="/register">Register</Link>

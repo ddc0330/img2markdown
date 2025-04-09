@@ -35,7 +35,7 @@
 
   /* 導航欄樣式 */
   .navbar {
-    @apply bg-white border-b border-gray-200 shadow-sm sticky top-0 z-10 w-full;
+    @apply bg-gray-200 border-b border-gray-200 shadow-sm sticky top-0 z-10 w-full;
     height: 64px; /* 固定高度 */
     display: flex;
     align-items: center;
@@ -76,8 +76,12 @@
   .navbar-item {
     @apply flex items-center justify-center text-gray-700 hover:bg-gray-100 transition-colors;
     @apply h-full w-[120px]; /* 高度貼齊 + 寬度固定（w-40 約 160px） */
+    text-decoration: none; /* 移除底線 */
   }
   
+  .navbar-item:hover {
+    text-decoration: none; /* 確保 hover 時也沒有底線 */
+  }
 
   .navbar-icon {
     @apply h-5 w-5 mr-2 flex-shrink-0;
@@ -141,5 +145,16 @@
     text-orientation: mixed !important;
     word-break: keep-all !important;
     white-space: nowrap !important;
+  }
+
+  .btn-gray {
+    @apply px-6 py-3 bg-gray-500 text-white text-lg font-bold rounded-lg hover:bg-gray-600 
+           transition-all duration-200 shadow-sm hover:shadow-md 
+           focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2;
+    width: 150px; /* 縮小寬度 */
+  }
+
+  .btn-light-gray {
+    @apply px-4 py-2 bg-gray-200 text-gray-700 rounded-lg cursor-pointer hover:bg-gray-300 transition-colors;
   }
 }

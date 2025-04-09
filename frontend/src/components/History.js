@@ -12,6 +12,7 @@ function History() {
   const [histories, setHistories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [expandedStates, setExpandedStates] = useState({});
   const { user, logout } = useAuth();
 
   useEffect(() => {
@@ -27,6 +28,15 @@ function History() {
         }
       });
       setHistories(response.data);
+      // 初始化展開狀態
+      const initialStates = {};
+      response.data.forEach(history => {
+        initialStates[history.id] = {
+          source: false,
+          preview: false
+        };
+      });
+      setExpandedStates(initialStates);
       setLoading(false);
     } catch (err) {
       setError('Failed to fetch history');
@@ -47,6 +57,16 @@ function History() {
     } catch (err) {
       setError('Failed to delete history item');
     }
+  };
+
+  const toggleExpand = (historyId, type) => {
+    setExpandedStates(prev => ({
+      ...prev,
+      [historyId]: {
+        ...prev[historyId],
+        [type]: !prev[historyId][type]
+      }
+    }));
   };
 
   // 轉換時間為 GMT+8 格式
@@ -89,12 +109,9 @@ function History() {
             {/* Left: Logo and Title */}
             <div className="navbar-brand">
               <div className="w-8 h-8 flex items-center justify-center bg-primary-100 text-primary-600 rounded">
-                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M7 18H17V16H7V18Z" fill="currentColor" />
-                  <path d="M17 14H7V12H17V14Z" fill="currentColor" />
-                  <path d="M7 10H11V8H7V10Z" fill="currentColor" />
-                  <path fillRule="evenodd" clipRule="evenodd" d="M6 2C4.34315 2 3 3.34315 3 5V19C3 20.6569 4.34315 22 6 22H18C19.6569 22 21 20.6569 21 19V9C21 5.13401 17.866 2 14 2H6ZM5 5C5 4.44772 5.44772 4 6 4H14C16.7614 4 19 6.23858 19 9V19C19 19.5523 18.5523 20 18 20H6C5.44772 20 5 19.5523 5 19V5Z" fill="currentColor" />
-                </svg>
+                <div className="w-8 h-8 flex items-center justify-center bg-primary-100 text-primary-600 rounded">
+                  <img src="/favicon.ico" alt="Logo" className="h-full w-full object-contain" />
+                </div>
               </div>
               <h1 className="navbar-title">
                 History
@@ -115,9 +132,8 @@ function History() {
                 Home
               </Link>
               <button onClick={logout} className="navbar-item">
-                <svg className="navbar-icon h-full" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V7.414l-5-5H3zM2 4a2 2 0 012-2h6.586a1 1 0 01.707.293l6.414 6.414a1 1 0 01.293.707V16a2 2 0 01-2 2H4a2 2 0 01-2-2V4z" clipRule="evenodd" />
-                  <path fillRule="evenodd" d="M10 12a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                <svg class="navbar-icon w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H8m12 0-4 4m4-4-4-4M9 4H7a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h2"/>
                 </svg>
                 Logout
               </button>
@@ -150,20 +166,35 @@ function History() {
                         <span className="text-sm text-gray-600">
                           {formatDateTime(history.created_at)}
                         </span>
-                        <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                          history.status === 'completed' ? 'bg-emerald-100 text-emerald-800' :
-                          history.status === 'processing' ? 'bg-amber-100 text-amber-800' :
-                          'bg-rose-100 text-rose-800'
-                        }`}>
-                          {history.status}
-                        </span>
                       </div>
-                      <button
-                        onClick={() => handleDelete(history.id)}
-                        className="px-3 py-1.5 bg-rose-50 text-rose-700 rounded-lg hover:bg-rose-100 transition-colors text-sm font-medium"
-                      >
-                        Delete
-                      </button>
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={() => toggleExpand(history.id, 'source')}
+                          className={`px-3 py-1.5 rounded-lg transition-colors text-sm font-medium ${
+                            expandedStates[history.id]?.source
+                              ? 'bg-gray-200 text-gray-700'
+                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          }`}
+                        >
+                          {expandedStates[history.id]?.source ? 'Hide Source' : 'Show Source'}
+                        </button>
+                        <button
+                          onClick={() => toggleExpand(history.id, 'preview')}
+                          className={`px-3 py-1.5 rounded-lg transition-colors text-sm font-medium ${
+                            expandedStates[history.id]?.preview
+                              ? 'bg-gray-200 text-gray-700'
+                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          }`}
+                        >
+                          {expandedStates[history.id]?.preview ? 'Hide Preview' : 'Show Preview'}
+                        </button>
+                        <button
+                          onClick={() => handleDelete(history.id)}
+                          className="px-3 py-1.5 bg-rose-50 text-rose-700 rounded-lg hover:bg-rose-100 transition-colors text-sm font-medium"
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </div>
                   </div>
                   
@@ -179,13 +210,25 @@ function History() {
                     </div>
                   )}
                   
-                  <div className="px-6 py-4">
-                    <div className="prose max-w-none">
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {expandedStates[history.id]?.source && (
+                    <div className="px-6 py-4 border-t border-gray-100">
+                      <h3 className="text-sm font-medium text-gray-700 mb-2">Markdown Source</h3>
+                      <pre className="bg-gray-50 p-4 rounded-lg overflow-x-auto text-sm">
                         {history.markdown_content}
-                      </ReactMarkdown>
+                      </pre>
                     </div>
-                  </div>
+                  )}
+                  
+                  {expandedStates[history.id]?.preview && (
+                    <div className="px-6 py-4 border-t border-gray-100">
+                      <h3 className="text-sm font-medium text-gray-700 mb-2">Preview</h3>
+                      <div className="prose max-w-none">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {history.markdown_content}
+                        </ReactMarkdown>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
